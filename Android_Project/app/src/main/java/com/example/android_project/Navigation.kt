@@ -9,7 +9,7 @@ import androidx.navigation.compose.rememberNavController
 @Composable
 fun Navigation() {
     val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = Screen.CameraScreen.route) {
+    NavHost(navController = navController, startDestination = Screen.GalleryScreen.route) {
         composable(route = Screen.CameraScreen.route) {
             Camera(navController = navController)
         }

@@ -6,7 +6,9 @@ import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -14,6 +16,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
@@ -23,9 +26,14 @@ import androidx.navigation.NavHostController
 @Composable
 fun Camera(navController: NavHostController) {
     Column() {
+        Spacer(modifier = Modifier.height(20.dp))
         Button(
-            onClick = { navController.navigate(Screen.GalleryScreen.route) },
-            modifier = Modifier.align(Alignment.CenterHorizontally)
+            onClick = { navController.navigate(Screen.GalleryScreen.route) {
+                popUpTo(Screen.CameraScreen.route) {
+                    inclusive = true
+                }
+            } },
+            modifier = Modifier.align(Alignment.End)
         ) {
             Text("Gallery")
         }
