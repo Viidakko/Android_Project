@@ -10,7 +10,11 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.android_project.ui.theme.Android_projectTheme
 
 class MainActivity : ComponentActivity() {
@@ -19,6 +23,19 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             Navigation()
+        }
+    }
+}
+
+@Composable
+fun Navigation() {
+    val navController = rememberNavController()
+    NavHost(navController = navController, startDestination = Screen.GalleryScreen.route) {
+        composable(route = Screen.CameraScreen.route) {
+            Camera(navController = navController, LocalContext.current)
+        }
+        composable(route = Screen.GalleryScreen.route) {
+            Gallery(navController = navController)
         }
     }
 }
