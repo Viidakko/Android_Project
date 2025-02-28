@@ -30,7 +30,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun Navigation() {
     val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = Screen.GalleryScreen.route) {
+    NavHost(navController = navController, startDestination = Screen.CameraScreen.route) {
         composable(route = Screen.CameraScreen.route) {
             Camera(navController = navController, LocalContext.current)
         }

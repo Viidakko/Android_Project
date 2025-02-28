@@ -71,7 +71,10 @@ fun Camera(navController: NavHostController, context: Context) {
     }
     val scaffoldState = rememberBottomSheetScaffoldState()
 
+<<<<<<< Updated upstream
     val viewModel = viewModel<Ph>()
+=======
+>>>>>>> Stashed changes
 
     BottomSheetScaffold(
         scaffoldState = scaffoldState,
