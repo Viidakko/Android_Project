@@ -48,6 +48,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import java.io.File
 import java.text.SimpleDateFormat
@@ -69,6 +70,9 @@ fun Camera(navController: NavHostController, context: Context) {
         }
     }
     val scaffoldState = rememberBottomSheetScaffoldState()
+
+    val viewModel = viewModel<Ph>()
+
     BottomSheetScaffold(
         scaffoldState = scaffoldState,
         sheetPeekHeight = 0.dp,
