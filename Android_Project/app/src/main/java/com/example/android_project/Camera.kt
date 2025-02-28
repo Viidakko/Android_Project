@@ -3,64 +3,46 @@ package com.example.android_project
 import android.content.Context
 import android.graphics.Bitmap
 import android.util.Log
-import androidx.camera.core.CameraExecutor
 import androidx.camera.core.CameraSelector
-import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCapture.OnImageCapturedCallback
 import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.ImageProxy
-import androidx.camera.core.Preview
-import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.CameraController
 import androidx.camera.view.LifecycleCameraController
-import androidx.camera.view.PreviewView
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowForward
-import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Cameraswitch
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material.icons.filled.PhotoLibrary
-import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material3.BottomSheetScaffold
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import java.io.File
-import java.text.SimpleDateFormat
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
-
-private var imageCapture: ImageCapture? = null
+import kotlinx.coroutines.launch
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Camera(navController: NavHostController, context: Context) {
+    val scope = rememberCoroutineScope()
     val controller = remember {
         LifecycleCameraController(context).apply {
             setEnabledUseCases(
@@ -71,16 +53,17 @@ fun Camera(navController: NavHostController, context: Context) {
     }
     val scaffoldState = rememberBottomSheetScaffoldState()
 
-<<<<<<< Updated upstream
-    val viewModel = viewModel<Ph>()
-=======
->>>>>>> Stashed changes
+    val viewModel = viewModel<PhotoViewModel>()
+    val bitmaps by viewModel.bitmaps.collectAsState()
 
     BottomSheetScaffold(
         scaffoldState = scaffoldState,
         sheetPeekHeight = 0.dp,
         sheetContent = {
-
+            PhotoBottomSheet(
+                bitmaps = bitmaps,
+                modifier = Modifier.fillMaxWidth()
+            )
         }
     ) { padding ->
         Box(
@@ -108,19 +91,6 @@ fun Camera(navController: NavHostController, context: Context) {
                     contentDescription = "Switch Camera"
                 )
             }
-            IconButton(
-                onClick = { navController.navigate(Screen.GalleryScreen.route) {
-                    popUpTo(Screen.CameraScreen.route) {
-                        inclusive = true
-                    }
-                } },
-                modifier = Modifier.align(Alignment.TopEnd).offset(-20.dp, 20.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.PhotoLibrary,
-                    contentDescription = "Gallery"
-                )
-            }
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -130,7 +100,23 @@ fun Camera(navController: NavHostController, context: Context) {
             ) {
                 IconButton(
                     onClick = {
-
+                        scope.launch {
+                            scaffoldState.bottomSheetState.expand()
+                        }
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.PhotoLibrary,
+                        contentDescription = "Gallery"
+                    )
+                }
+                IconButton(
+                    onClick = {
+                        takePhoto(
+                            controller = controller,
+                            onPhotoTaken = viewModel::onPhotoTaken,
+                            context = context
+                        )
                     }
                 ) {
                     Icon(
@@ -153,7 +139,21 @@ private fun takePhoto(
         object : OnImageCapturedCallback() {
             override fun onCaptureSuccess(image: ImageProxy) {
                 super.onCaptureSuccess(image)
-                onPhotoTaken(image.toBitmap())
+
+                val matrix = android.graphics.Matrix().also {
+                    it.postRotate(image.imageInfo.rotationDegrees.toFloat())
+                }
+
+                val rotatedBitmap = Bitmap.createBitmap(
+                    image.toBitmap(),
+                    0,
+                    0,
+                    image.width,
+                    image.height,
+                    matrix,
+                    true
+                )
+                onPhotoTaken(rotatedBitmap)
             }
             override fun onError(exception: ImageCaptureException) {
                 super.onError(exception)
