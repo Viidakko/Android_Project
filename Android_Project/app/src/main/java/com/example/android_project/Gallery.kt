@@ -5,22 +5,32 @@ import android.content.pm.PackageManager
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Camera
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 
 @Composable
-fun Gallery(navController: NavHostController) {
+fun Gallery(navController: NavHostController, viewModel: PhotoViewModel) {
     val requestPermissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted: Boolean ->
@@ -31,9 +41,17 @@ fun Gallery(navController: NavHostController) {
         }
     }
     val context = LocalContext.current
-    Column() {
-        Spacer(modifier = Modifier.height(20.dp))
-        Button(
+    val bitmaps by viewModel.bitmaps.collectAsState()
+    Box(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        if (bitmaps.isEmpty()) {
+            Text("No images taken", modifier = Modifier.align(Alignment.Center
+            ))
+        } else {
+            GalleryContent(bitmaps, modifier = Modifier.fillMaxSize())
+        }
+        IconButton(
             onClick = {
                 if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
                     navController.navigate(Screen.CameraScreen.route) {
@@ -53,8 +71,16 @@ fun Gallery(navController: NavHostController) {
                     }
                 }
             },
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .offset(20.dp, -20.dp)
+                .size(40.dp)
         ) {
-            Text("Camera")
+            Icon(
+                imageVector = Icons.Default.Camera,
+                contentDescription = "Go to Camera",
+                modifier = Modifier.size(40.dp)
+            )
         }
     }
 }
