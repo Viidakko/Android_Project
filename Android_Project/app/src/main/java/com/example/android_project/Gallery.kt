@@ -1,20 +1,15 @@
 package com.example.android_project
 
-import android.content.Context
 import android.content.pm.PackageManager
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Camera
-import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -26,7 +21,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 
 @Composable
@@ -61,11 +55,9 @@ fun Gallery(navController: NavHostController, viewModel: PhotoViewModel) {
                     }
                 } else {
                     requestPermissionLauncher.launch(android.Manifest.permission.CAMERA).also {
-                        if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-                            navController.navigate(Screen.CameraScreen.route) {
-                                popUpTo(Screen.GalleryScreen.route) {
-                                    inclusive = true
-                                }
+                        navController.navigate(Screen.CameraScreen.route) {
+                            popUpTo(Screen.GalleryScreen.route) {
+                                inclusive = true
                             }
                         }
                     }
